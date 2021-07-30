@@ -1,6 +1,7 @@
-import requests
-import hashlib
+import html
 import redis
+import hashlib
+import requests
 
 from flask import Flask, Response, request
 
@@ -15,10 +16,10 @@ def manipage():
     name_hash = 'sdfaf'
     name = default_name
     if request.method == 'POST':
-        name = request.form['name']
-        salted_name = salt + name
-        name_hash = hashlib.sha256(salted_name.encode()).hexdigest()
-
+        name = html.escape(request.form['name'])
+        
+    salted_name = salt + name
+    name_hash = hashlib.sha256(salted_name.encode()).hexdigest()
     header = '<html><head><title>Identidock</title></head><body>'
     body = '''<form method="POST">
               Hello <input type="text" name="name" value="{0}">
@@ -32,6 +33,7 @@ def manipage():
 
 @app.route('/monster/<name>/')
 def get_identicon(name):
+    name = html.escape(name, quote=True)
     image = cache.get(name)
     if image is None:
         print("Cache miss (промах кэша)", flush=True)
