@@ -1,9 +1,9 @@
 identidock:
   build: .
-  ports:
-    - "5000:5000"
+  expose:
+    - "9090"
   environment:
-    ENV: DEV
+    ENV: PROD
   volumes:
     - ./app:/app
   links:
